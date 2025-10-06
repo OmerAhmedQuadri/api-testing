@@ -1,150 +1,90 @@
-import https from "https";
-import fs from "fs";
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Contact Form</title>
+    <link rel="stylesheet" href="style.css">
 
-const options = {
-  key: fs.readFileSync("key.pem"),
-  cert: fs.readFileSync("cert.pem")
-};
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/1.4.0/axios.min.js" integrity="sha512-uMtXmF28A2Ab/JJO2t/vYhlaa/3ahUOgj1Zf27M5rOo8/+fcTUVH0/E0ll68njmjrLqOBjXM3V9NiPFL5ywWPQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <style>
+        input[type=text], select, textarea {
+        width: 100%;
+        padding: 12px; 
+        border: 1px solid #ccc; 
+        border-radius: 4px;
+        box-sizing: border-box; 
+        margin-top: 6px; 
+        margin-bottom: 16px;
+        resize: vertical 
+        }
 
-// let port = 443;
+
+        input[type=submit] {
+        background-color: #04AA6D;
+        color: white;
+        padding: 12px 20px;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+        }
 
 
-
-// server.listen(port, () => {
-//   console.log(`HTTPS server running on port ${port}`);
-// });
-
+        input[type=submit]:hover {
+        background-color: #45a049;
+        }
 
 
-// import http from "http";
-// import fs from "fs";
+        .container {
+        border-radius: 5px;
+        background-color: #f2f2f2;
+        padding: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+  <form onsubmit="hitAPI(event)">
 
-let port = 5000;
-// let https_port = 443;
+    <label for="fname">First Name</label>
+    <input type="text" id="fname" name="firstname" placeholder="Your name..">
 
-// let options = {
-//   key: fs.readFileSync(
-//     "/Users/armasahar/Documents/codebase/MAT-06/06-Full-Stack/key.pem"
-//   ),
-//   cert: fs.readFileSync(
-//     "/Users/armasahar/Documents/codebase/MAT-06/06-Full-Stack/cert.pem"
-//   ),
-// };
-let server = https.createServer(options, (req, res) => {
-  // your code (same as current, but now accessible via HTTPS)
-// });
-// let server = http.createServer((req, res) => {
-  console.log("Incoming request:", req.method, req.url);
-  // CORS headers
-  res.setHeader("Access-Control-Allow-Origin", "*");
-  res.setHeader("Access-Control-Allow-Methods", "GET", "POST", "PUT", "DELETE");
-  res.setHeader("Access-Control-Allow-Headers", "Content-Type, Authorization");
+    <label for="lname">Last Name</label>
+    <input type="text" id="lname" name="lastname" placeholder="Your last name..">
 
-  if (req.method == "OPTIONS") {
-    console.log("Preflight OPTIONS API");
-    res.statusCode = 200;
-    res.end();
-    return;
-  }
+    <label for="country">Country</label>
+    <select id="country" name="country">
+      <option value="australia">Australia</option>
+      <option value="canada">Canada</option>
+      <option value="usa">USA</option>
+    </select>
 
-  const my_url = new URL(req.url, `http://${req.headers.host}`);
+    <label for="subject">Subject</label>
+    <textarea id="subject" name="subject" placeholder="Write something.." style="height:200px"></textarea>
 
-  switch (my_url.pathname) {
-    case "/":
-      res.end(`Welcome to Home Page`);
-      break;
+    <input type="submit" value="Submit">
 
-    case "/about":
-      res.end(`This is about us page`);
-      break;
-
-    case "/contact":
-      if (req.method == "POST") {
-        let body = "";
-
-        req.on("data", (chunk) => {
-          body += chunk.toString();
-        });
-
-        req.on("end", () => {
-          console.log(
-            `Received data from /contact by ${req.socket.remoteAddress}: ${body}`
-          );
-
-          try {
-            let data = [];
-
-            let fileData = fs.readFileSync("./data.json", (err) => {
-              if (err) console.log(err);
-            });
-
-            data = JSON.parse(fileData);
-
-            const newData = JSON.parse(body);
-
-            data.push(newData);
-
-            fs.writeFile("./data.json", JSON.stringify(data, null, 4), (err) => {
-              if (err) console.log(err);
-              else console.log("Data saved!");
-            });
-          } catch (error) {
-            console.log(error);
-          }
-
-          // try {
-          //   let data = [];
-          //   if (fs.existsSync("./backend/database/data.json")) {
-          //     let filedata = fs.readFileSync(
-          //       "./backend/database/data.json",
-          //       "utf-8"
-          //     );
-          //     data = filedata ? JSON.parse(filedata) : [];
-          //   }
-
-          //   const new_data = JSON.parse(body);
-          //   data.push(new_data);
-
-          //   fs.writeFileSync(
-          //     "../database/data.json",
-          //     JSON.stringify(data, null, 2)
-          //   );
-          //   console.log("Data Saved!");
-
-          //   res.writeHead(
-          //     201,
-
-          //     { "Content-Type": "application/json" }
-          //   );
-
-          //   res.end(
-          //     JSON.stringify({
-          //       message: "Your information was sent, You'll be contacted soon!",
-          //     })
-          //   );
-          // } catch (error) {
-          //   console.error(error);
-          //   res.writeHead(500, { "Content-Type": "application/json" });
-          //   res.end(JSON.stringify({ error: "Internal Server Error" }));
-          // }
-        });
-      } else if (req.method == "GET") {
-        res.statusCode = 200;
-        res.end("End");
-      }
-
-      // else {
-      //     res.statusCode = 405;
-      //     res.end('Method Not Allowed');
-      // }
-      break;
-    default:
-      res.statusCode = 404;
-      res.end("error: Page Not Found");
-      break;
-  }
-});
-
-server.listen(port, () => {
-  console.log(`Server is running at ${port}`);
-});
+  </form>
+</div>
+</body>
+<script>
+async function hitAPI(event){
+        
+        event.preventDefault();
+        const data = {
+            first_name: document.getElementById("fname").value,
+            last_name: document.getElementById("lname").value,
+            country: document.getElementById("country").value,
+            message: document.getElementById("subject").value
+        }
+        // const res = await axios.post("http://192.168.0.38:5000/contact", data);
+        const res = await axios.post("http://124.123.33.242/contact", data);
+        document.getElementById("fname").value = ''
+        document.getElementById("lname").value = ''
+        document.getElementById("country").value = ''
+        document.getElementById("subject").value = ''
+        console.log(res.data);
+        console.log(data)
+    }
+</script>
+</html>
