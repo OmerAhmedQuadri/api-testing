@@ -77,7 +77,7 @@ async function hitAPI(event){
             message: document.getElementById("subject").value
         }
         // const res = await axios.post("http://192.168.0.38:5000/contact", data);
-        const res = await axios.post("https://124.123.33.242/contact", data);
+        const res = await axios.post("https://api-testing-backend.onrender.com/contact", data);
         document.getElementById("fname").value = ''
         document.getElementById("lname").value = ''
         document.getElementById("country").value = ''
